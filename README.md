@@ -1,4 +1,4 @@
-# ICER Image Compression using Wavelet Transform in Python
+# ICER Image Compression using Wavelet Transformation in Python
 
 Currently, the only available implementation of the ICER progressive wavelet image compression technique as describe by NASA is in C. Of course, this is done in C with memory constraints in mind as this algorithm is originally for NASA exploration hardware. However, we'll look at a more modern application friendly version by implementing this technique in Python. The project is based on the paper ["The ICER Progressive Wavelet Image Compressor"](https://ipnpr.jpl.nasa.gov/progress_report/42-155/155J.pdf).
 
