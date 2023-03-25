@@ -67,15 +67,12 @@ $$ r[n] = l[n-1] -l[n], n=1,2,...,[\frac{N}{2}] - 1$$
 The high-pass filter output computation varies depending on the current index value and the filter parameters. The implemented conditions cover different edge cases, such as the first and last output values and specific parameter configurations.
 
 This follows the equation:
+
 $$ h[n] = d[n] -
 \begin{cases}
 [\frac{1}{4}r[1]] & n=0 \\
-
 [\frac{1}{4}r[1] + \frac{3}{8}r[2] - \frac{1}{4}d[2] + \frac{1}{2}] & n=1,a_{-1} \neq 0 \\
-
 [\frac{1}{4}r[\frac{N}{2} - 1]] & N \text{ even}, n=\frac{N}{2}-1 \\
-
 [\alpha_{-1} r[n-1] + \alpha_0 r[n] + \alpha_1 r[n+1] - \beta d[n+1] + \frac{1}{2}] & \text{otherwise}
-
 \end{cases} $$
 
