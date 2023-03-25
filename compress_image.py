@@ -56,9 +56,15 @@ if __name__ == "__main__":
     # Define wavelet filter
     selected_filter = wf.WaveletFilter(args.filter, args.filter_parameters)
 
-    # Example usage
+    # Load image as a grayscale numpy array
     input_image = load_image(args.input_image)
+    
+    # Select wavelet transform based on filter params
     wavelet_transform = wt.WaveletTransform(input_image, selected_filter)
     icer = ICER(wavelet_transform)
+    
+    # We're only implementing lossless compression at first
     compressed_image = icer.lossless_compression()
+    
+    # Save decomposed images
     save_image(args.output_image, compressed_image)
