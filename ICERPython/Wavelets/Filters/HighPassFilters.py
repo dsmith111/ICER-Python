@@ -61,13 +61,13 @@ class HighPassFilter:
         for i in range(stopping_point):
             
             if i == 0:
-                outputs[i] = self._hn_zero_data_computation(i)
+                outputs[i] = self.d_n_outputs[i] - self._hn_zero_data_computation(i)
             elif i == 1 and self.filter_parameters[0] != 0:
-                outputs[i] = self._hn_one_data_computation(i)
+                outputs[i] = self.d_n_outputs[i] - self._hn_one_data_computation(i)
             elif i == stopping_point - 1 and is_odd == False:
-                outputs[i] = self._hn_end_even_data_computation(i)
+                outputs[i] = self.d_n_outputs[i] - self._hn_end_even_data_computation(i)
             else:
-                outputs[i] = self._hn_standard_data_computation(i)
+                outputs[i] = self.d_n_outputs[i] - self._hn_standard_data_computation(i)
         
         return outputs
 
