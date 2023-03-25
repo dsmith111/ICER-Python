@@ -67,5 +67,33 @@ The project is organized into the following directories:
 
 The main script for compressing images is `compress_image.py`.
 
+## Results
+### Wavelet Transformation
+The first step in the ICER algorithm is the break down images based on wavelet decomposition. The major note here as to why this is important when compared to other compression algorithms is the full image data compression rather than performing compression region by region. In the event of data transmission failure, most images would simply not have a region of the image; in this case, we are setting up the rest of the algorithm to allow us to send much lower fidelity full images. This allows us to have a better guarantee of receiving a full image with the cost of fidelity incase of any failures.
+
+Here is a comparison of this algorithm's decomposition vs the result's in the paper:
+
+#### Python ICER
+**Original Image**
+![](./original_images/rover.jpg)
+
+**Decomposed Images**
+Horizontal Low-pass, Vertical Low-pass   |  Horizontal Low-pass, Vertical High-pass
+:-------------------------:|:-------------------------:
+![](./decomposed_wavelets/A/rover_compressed_low_pass0.png)  |  ![](./decomposed_wavelets/A/rover_compressed_high_pass0.png)
+
+### NASA ICER
+**Original Image**
+![](./assets/icer-rover.png)
+
+**Decomposed Images**
+Decomposed Images  |  Labels
+:-------------------------:|:-------------------------:
+![](./assets/icer-passes.png)  |  ![](./assets/icer-desc.png)
+
+_These images were taken directly from the research paper, hence the lower resolution_
+
+Comparing the Python ICER results against the original NASA ICER results, we can see the decomposition has been accurately implemented.
+
 ## Contributing
 Contributions are welcome! If you find any issues or have suggestions for improvements, please open an issue or submit a pull request.
