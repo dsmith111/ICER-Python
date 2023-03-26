@@ -83,7 +83,7 @@ The main script for compressing images is `compress_image.py`.
 ### Wavelet Transformation
 The first step in the ICER algorithm is the break down images based on wavelet decomposition. The major note here as to why this is important when compared to other compression algorithms is the full image data compression rather than performing compression region by region. In the event of data transmission failure, most images would simply not have a region of the image; in this case, we are setting up the rest of the algorithm to allow us to send much lower fidelity full images. This allows us to have a better guarantee of receiving a full image with the cost of fidelity incase of any failures.
 
-Here is a comparison of this algorithm's decomposition vs the result's in the paper:
+Here is a comparison of this algorithm's decomposition vs the results in the paper:
 
 #### Python ICER
 **Original Image**
