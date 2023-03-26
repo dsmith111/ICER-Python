@@ -96,7 +96,7 @@ Transmitted_Value == 192
 
 $$ Error = \frac{213-192}{213} * 100 = \text{9.86 percent} $$
 
-By focusing on transmitting just the first 2 MSB values, we were able to transmit our pixel with only a 10% error! As more bits are transmitted, we end up converging to our true pixel value, but as we've demonstrated here, it's better to priortize progressive value transmissions from MSB -> LSB.
+By focusing on transmitting just the first 2 MSB values, we were able to transmit our pixel with only a 10% error! As more bits are transmitted, we end up converging to our true pixel value, but as we've demonstrated here, it's better to prioritize progressive value transmissions from MSB -> LSB.
 
 ## What is a Context Model?
 _WIP_
