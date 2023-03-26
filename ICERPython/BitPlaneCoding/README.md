@@ -10,7 +10,7 @@ _Explanations/Defintions for better upcoming context_:
 - Binary numbers:
   - Standard numbers operate on base-10 values
     - Every 10 "counts" (0-9) we add another digit.
-  - Binary numbers operate on base-10 values
+  - Binary numbers operate on base-2 values
     - Every 2 "counts" (0, 1) we add another digit.
   - Progressive counting examples between the two:
     - Base-10: 00, 01, 02, 03, 04, 05, 06, 07, 08, 09, **1**0, 11,...
