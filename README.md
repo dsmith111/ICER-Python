@@ -63,7 +63,13 @@ The project is organized into the following directories:
       - `Filters`: Contains the low-pass and high-pass filter classes.
          - `HighPassFilters.py`
          - `LowPassFilters.py`
-    - `ICER.py`
+   - `BitPlaneCoding`: Contains the classes and methods related to bit-plane coding.
+      - `BitPlaneEncoder.py`: Implements the bit-plane encoding process.
+      - `BitPlaneDecoder.py`: Implements the bit-plane decoding process.
+      - `ContextModel.py`: Contains the context modeling methods for bit-plane coding.
+      - `ProbabilityEstimation.py`: Contains the methods for probability estimation used in the entropy coding process.
+   - `ICER.py`: Main ICER implementation, integrating all the components (Wavelets, BitPlaneCoding, etc.).
+
 
 The main script for compressing images is `compress_image.py`.
 
