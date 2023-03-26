@@ -14,6 +14,7 @@ _Note: This is still a work in progress. Here is the task list:_
 - [ ] Step 4: Image Quality and Compression Controlling
 
 ## Quick Links
+_Note: Equations are in LateX which does not display properly in the official GitHub mobile app_
 
 - [How does Wavelet Transformation Work?](https://github.com/dsmith111/ICER-Python/blob/master/ICERPython/Wavelets/README.md)
 - [How does Bit-plane Coding Work?](https://github.com/dsmith111/ICER-Python/blob/master/ICERPython/BitPlaneCoding/README.md)
