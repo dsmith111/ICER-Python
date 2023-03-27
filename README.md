@@ -1,6 +1,23 @@
+# A Reference for Implementing Algorithms in Publications - ICER Image Compression via Wavelet Transformation
+
+Unless their work incorporates research in some form, many software engineers, data scientists, developers won't know where to begin if they decide, or have to, translate a concept for some algorithm, architecture or other process from research papers to a fully functioning program. If you're not already experienced in the field behind a publication, they will come off as dense, jargon heavy and unreadable due to the general consensus from the authors that anyone reading the paper will be fully up to date with every concept that is not the topic of the paper (i.e. they are not self-contained). 
+
+However, this is less of a problem when the reader is intending to implement the resource. This may sound counter-intuitive at first, but converting these concepts into programs requires breaking the concept down into implementable sub-components. From here, the reader can focus on understanding the concepts behind each of these components separately. This provides concrete direction on what needs to be researched, why it is needed for the program to function and how it'll eventually be implemented.
+
+## What paper will be used?
+
+In this repository, we will be going over the ["The ICER Progressive Wavelet Image Compressor"](https://ipnpr.jpl.nasa.gov/progress_report/42-155/155J.pdf) algorithm developed by NASA JPL.
+
+## Why this paper?
+
+This project will hopefully cover the process for handling large, complex publications and should be applicable to much lighter versions. The paper we're referencing is a hefty 46 pages (43 without references), utilizes distinct concepts and discusses the stages of the algorithm along with the theoretical foundations of these stages. 
+
 # ICER Image Compression using Wavelet Transformation in Python
 
-Currently, the only available implementation of the ICER progressive wavelet image compression technique as described by NASA is in C. Of course, this is done in C with memory constraints in mind as this algorithm is originally for NASA exploration hardware. However, we'll look at a more modern application friendly version by implementing this technique in Python. The project is based on the paper ["The ICER Progressive Wavelet Image Compressor"](https://ipnpr.jpl.nasa.gov/progress_report/42-155/155J.pdf).
+This repository will not only be acting as a guide or reference, but it will, of course, contain a fully implemented version of the algorithm and also contain the standard information in a GitHub repository to demonstrate both, the implementation and presentation of a translated algorithm.
+
+## Background
+At the time of development, the only available implementation of the ICER progressive wavelet image compression technique is in C. Of course, this is done in C with memory constraints in mind as this algorithm is originally for NASA exploration hardware. However, for readability, accesibility and modernity purposes, this version implements this technique in Python.
 
 _Note: This is still a work in progress. Here is the task list:_
 
@@ -86,19 +103,25 @@ The first step in the ICER algorithm is the break down images based on wavelet d
 Here is a comparison of this algorithm's decomposition vs the results in the paper:
 
 #### Python ICER
+
 **Original Image**
+
 ![](./original_images/rover.jpg)
 
 **Decomposed Images**
+
 Horizontal Low-pass, Vertical Low-pass   |  Horizontal Low-pass, Vertical High-pass
 :-------------------------:|:-------------------------:
 ![](./decomposed_wavelets/A/rover_compressed_low_pass0.png)  |  ![](./decomposed_wavelets/A/rover_compressed_high_pass0.png)
 
 ### NASA ICER
+
 **Original Image**
+
 ![](./assets/icer-rover.png)
 
 **Decomposed Images**
+
 Decomposed Images  |  Labels
 :-------------------------:|:-------------------------:
 ![](./assets/icer-passes.png)  |  ![](./assets/icer-desc.png)
