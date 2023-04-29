@@ -20,7 +20,7 @@ def load_image(path):
     # Return image as a 2D numpy array
     return np.asarray(image)
 
-def save_image(path, image):
+def save_image(path, subbands):
     # Until the reconstruction is complete, we will save the separate wavelet decomposed images
     # Create a directory based on the filter used
     path, file_name = os.path.split(path)
@@ -29,22 +29,20 @@ def save_image(path, image):
         os.makedirs(path)
     path = os.path.join(path, file_name)
 
-    # Save the low pass image
-    low_pass_images = image[0]
-    for index, decomposed_wavelet in enumerate(low_pass_images):
-        low_pass_image = Image.fromarray(decomposed_wavelet).convert('L')
-        low_pass_image.save(path + f"_low_pass{index}.png")
-    
-    # Save the high pass images
-    high_pass_images = image[1]
-    for index, decomposed_wavelet in enumerate(high_pass_images):
-        high_pass_image = Image.fromarray(decomposed_wavelet).convert('L')
-        high_pass_image.save(path + f"_high_pass{index}.png")
+    # Save images with names containing subband and level
+    # subbands is a dictionary of the form {int: {str: np.array}}, e.x. {1: {"LL": np.array, "HL": np.array, "LH": np.array, "HH": np.array}}
+    for level, subband in subbands.items():
+        for subband_name, subband_image in subband.items():
+            if subband_image is None:
+                continue
+            image = Image.fromarray(subband_image).convert('L')
+            image.save(path + f"_level{level}_{subband_name}.png")
 
 def parse_args():
     parser = argparse.ArgumentParser(description='Compress an image with ICER.')
     parser.add_argument('-i', '--input_image', type=str, help='Path to input image')
     parser.add_argument('-o', '--output_image', type=str, help='Path to output image')
+    parser.add_argument('-l', '--levels', type=int, required = False, default=1, help='Number of levels of wavelet decomposition')
     parser.add_argument('-b', '--bitrate', type=float, required = False, default=0.5, help='Bitrate for lossy compression')
     parser.add_argument('-f', '--filter', type=str, required = False, default="A", help='Wavelet filter to use for compression')
     parser.add_argument('--filter_parameters', type=str, required = False, default="./filter_parameters.json", help='Path to filter parameters file')
@@ -64,7 +62,7 @@ if __name__ == "__main__":
     icer = ICER(wavelet_transform)
     
     # We're only implementing lossless compression at first
-    compressed_image = icer.lossless_compression()
+    subbands = icer.lossless_compression(args.levels)
     
     # Save decomposed images
-    save_image(args.output_image, compressed_image)
+    save_image(args.output_image, subbands)

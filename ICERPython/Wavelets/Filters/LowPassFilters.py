@@ -8,7 +8,7 @@ class LowPassFilter:
 
     def compute_outputs(self):
         # Implement low-pass filter operation
-        stopping_point = math.ceil((self.N / 2) - 1)
+        stopping_point = math.floor((self.N / 2) - 1)
         is_odd = False
 
         if self.N % 2 == 0:

@@ -17,7 +17,7 @@ class HighPassFilter:
 
     # Implement d(n) computation
     def compute_dn(self):
-        stopping_point = math.ceil((self.N / 2) - 1)
+        stopping_point = math.floor((self.N / 2) - 1)
         is_odd = False
 
         if self.N % 2 == 0:
@@ -51,7 +51,7 @@ class HighPassFilter:
 
     # Implement high-pass filter output computation
     def compute_outputs(self):
-        stopping_point = math.ceil((self.N / 2) - 1)
+        stopping_point = math.floor((self.N / 2) - 1)
         is_odd = False
 
         if self.N % 2 == 0:
@@ -89,7 +89,7 @@ class HighPassFilter:
     
     # Conditional for N is even and i == N/2 - 1
     def _hn_end_even_data_computation(self, i):
-        return (1/4) * self.r_n_outputs[(self.N/2) - 1]
+        return (1/4) * self.r_n_outputs[math.floor((self.N/2) - 1)]
     
     # Conditonal for everything else
     def _hn_standard_data_computation(self, i):
