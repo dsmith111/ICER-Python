@@ -9,9 +9,9 @@ The best way to describe a "bit-plane" is through an example.
 _Explanations/Defintions for better upcoming context_:
 - Binary numbers:
   - Standard numbers operate on base-10 values
-    - Every 10 digits (0-9) we add another digit.
-  - Binary numbers operate on base-10 values
-    - Every 2 digits (0, 1) we add another digit.
+    - Every 10 "counts" (0-9) we add another digit.
+  - Binary numbers operate on base-2 values
+    - Every 2 "counts" (0, 1) we add another digit.
   - Progressive counting examples between the two:
     - Base-10: 00, 01, 02, 03, 04, 05, 06, 07, 08, 09, **1**0, 11,...
     - Base-2: 00, 01, **1**0, 11, **1**00,101,...
@@ -94,9 +94,9 @@ Transmitted_Value == 192
 # Rest of bits fail to transmit
 ```
 
-$$ Error = \frac{213-192}{213} * 100\% = 9.86\% $$
+$$ Error = \frac{213-192}{213} * 100 = \text{9.86 percent} $$
 
-By focusing on transmitting just the first 2 MSB values, we were able to transmit our pixel with only a 10% error! As more bits are transmitted, we end up converging to our true pixel value, but as we've demonstrated here, it's better to priortize progressive value transmissions from MSB -> LSB.
+By focusing on transmitting just the first 2 MSB values, we were able to transmit our pixel with only a 10% error! As more bits are transmitted, we end up converging to our true pixel value, but as we've demonstrated here, it's better to prioritize progressive value transmissions from MSB -> LSB.
 
 ## What is a Context Model?
 _WIP_

@@ -40,6 +40,7 @@ The low-pass filter is responsible for smoothing the input data and preserving t
 - For odd-length data, it computes the output values as for even-length data and sets the last output value as the last data point.
 
 This follows the equation:
+
 $$ l[n] = 
 \begin{cases}
 [\frac{1}{2}*(x[2n]+x[2n+1])] & n=0,1,...,[\frac{N}{2}] \\
