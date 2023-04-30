@@ -26,7 +26,14 @@ _Note: This is still a work in progress. Here is the task list:_
     - [x] Low-pass Filter Implementation
     - [x] High-pass Filter Implementation
   - [x] Two-Dimensional Wavelet Transformation
-- [ ] Steps 2: Bit-Plane Coding
+    - [x] Multi-level Decomposition
+- [x] Steps 2: Bit-Plane Coding
+  - [x] Bit-Plane Construction
+    - [x] Pixel Binarization
+  - [x] Categorization
+  - [x] Context Modelling
+  - [x] Encoding Prioritzation
+  - [ ] Encoding Optimization
 - [ ] Step 3: Entropy Coding
 - [ ] Step 4: Image Quality and Compression Controlling
 
