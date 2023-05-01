@@ -2,7 +2,6 @@ from ICERPython.Wavelets import WaveletTransform as wt
 from ICERPython.Wavelets import WaveletFilter as wf
 from ICERPython.ICER import ICER
 import numpy as np
-# Import argparse
 import argparse
 from PIL import Image
 import os
