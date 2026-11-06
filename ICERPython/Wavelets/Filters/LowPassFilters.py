@@ -8,29 +8,14 @@ class LowPassFilter:
 
     def compute_outputs(self):
         # Implement low-pass filter operation
-        stopping_point = math.floor((self.N / 2) - 1)
-        is_odd = False
+        outputs = np.zeros((self.N + 1) // 2, dtype=np.int64)
+        for i in range(self.N // 2):
+            outputs[i] = self._even_data_computation(i)
 
-        if self.N % 2 == 0:
-            is_odd = True
-
-        outputs = np.zeros(self.N)
-
-        # If the length of the data is even, we only need to compute the first (N / 2) - 1 outputs
-        for i in range(self.N):
-            if i < stopping_point:
-                # Compute the output value for even data length
-                outputs[i] = self._even_data_computation(i)
-            elif i >= stopping_point and is_odd == False:
-                # Compute the output value for even data length and break the loop
-                outputs[i] = self._even_data_computation(i)
-                break
-            else:
-                # If the length of the data is odd, we need to zero out the last output rounded up
-                outputs[i] = self.data[i-1]
-                break
+        if self.N % 2 != 0:
+            outputs[-1] = self.data[-1]
 
         return outputs
     
     def _even_data_computation(self, i):
-        return 0.5 * (self.data[2 * i] + self.data[(2 * i) + 1])
+        return (int(self.data[2 * i]) + int(self.data[(2 * i) + 1])) // 2

@@ -11,35 +11,14 @@ class HighPassFilter:
         self.data = data
         self.N = len(data)
         self.low_pass_outputs = low_pass_outputs
-        self.d_n_outputs = np.zeros(self.N)
-        self.r_n_outputs = np.zeros(self.N)
+        self.d_n_outputs = np.zeros((self.N + 1) // 2, dtype=np.int64)
+        self.r_n_outputs = np.zeros((self.N + 1) // 2, dtype=np.int64)
         self.filter_parameters = filter_parameters
 
     # Implement d(n) computation
     def compute_dn(self):
-        stopping_point = math.floor((self.N / 2) - 1)
-        is_odd = False
-
-        if self.N % 2 == 0:
-            is_odd = True
-
-        outputs = np.zeros(self.N)
-
-        # If the length of the data is even, we only need to compute the first (N / 2) - 1 outputs
-        for i in range(self.N):
-            if i < stopping_point:
-                # Compute the output value for even data length
-                outputs[i] = self._dn_even_data_computation(i)
-            elif i >= stopping_point and is_odd == False:
-                # Compute the output value for even data length and break the loop
-                outputs[i] = self._dn_even_data_computation(i)
-                break
-            else:
-                # If the length of the data is odd, we need to zero out the last output rounded up
-                outputs[i] = 0
-                break
-
-        self.d_n_outputs = outputs
+        for i in range(self.N // 2):
+            self.d_n_outputs[i] = self._dn_even_data_computation(i)
 
     # Implement r(n) computation
     def compute_rn(self):
@@ -51,33 +30,31 @@ class HighPassFilter:
 
     # Implement high-pass filter output computation
     def compute_outputs(self):
-        stopping_point = math.floor((self.N / 2) - 1)
-        is_odd = False
-
-        if self.N % 2 == 0:
-            is_odd = True
-
-        outputs = np.zeros(stopping_point)
-        for i in range(stopping_point):
-            
-            if i == 0:
-                outputs[i] = self.d_n_outputs[i] - self._hn_zero_data_computation(i)
-            elif i == 1 and self.filter_parameters[0] != 0:
-                outputs[i] = self.d_n_outputs[i] - self._hn_one_data_computation(i)
-            elif i == stopping_point - 1 and is_odd == False:
-                outputs[i] = self.d_n_outputs[i] - self._hn_end_even_data_computation(i)
-            else:
-                outputs[i] = self.d_n_outputs[i] - self._hn_standard_data_computation(i)
+        outputs = np.zeros(self.N // 2, dtype=np.int64)
+        for i in range(self.N // 2):
+            outputs[i] = self.d_n_outputs[i] - self._compute_prediction(i)
         
         return outputs
 
+    def _compute_prediction(self, i):
+        if i == 0:
+            value = self._hn_zero_data_computation(i)
+        elif i == self.N // 2 - 1 and self.N % 2 == 0:
+            value = self._hn_end_even_data_computation(i)
+        elif i == 1 and self.filter_parameters[0] != 0:
+            value = self._hn_one_data_computation(i)
+        else:
+            value = self._hn_standard_data_computation(i)
+        return math.floor(value)
 
 
     def _dn_even_data_computation(self, i):
-        return self.data[2 * i] - self.data[2 * i + 1]
+        return int(self.data[2 * i]) - int(self.data[2 * i + 1])
     
     # Conditonal for i == 0
     def _hn_zero_data_computation(self, i):
+        if len(self.r_n_outputs) < 2:
+            return 0
         return (1/4) * self.r_n_outputs[1]
     
     # Conditional for i == 1 and filter_parameters[0] != 0

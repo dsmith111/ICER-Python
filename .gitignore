@@ -3,3 +3,5 @@
 *.jpg
 *.jpeg
 *.bmp
+__pycache__/
+*.pyc

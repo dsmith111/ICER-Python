@@ -19,7 +19,7 @@ This repository will not only be acting as a guide or reference, but it will, of
 ## Background
 At the time of development, the only available implementation of the ICER progressive wavelet image compression technique is in C. Of course, this is done in C with memory constraints in mind as this algorithm is originally for NASA exploration hardware. However, for readability, accesibility and modernity purposes, this version implements this technique in Python.
 
-_Note: This is still a work in progress. Here is the task list:_
+_Here is the implementation task list:_
 
 - [x] Step 1: Wavelet Transformations
   - [x] One-Dimensional Wavelet Transformation
@@ -33,42 +33,51 @@ _Note: This is still a work in progress. Here is the task list:_
   - [x] Categorization
   - [x] Context Modelling
   - [x] Encoding Prioritzation
-  - [ ] Encoding Optimization
-- [ ] Step 3: Entropy Coding
-- [ ] Step 4: Image Quality and Compression Controlling
+  - [x] Encoding Optimization
+- [x] Step 3: Entropy Coding
+- [x] Step 4: Image Quality and Compression Controlling
+
+The implementation supports grayscale image compression and reconstruction, including exact lossless round trips, progressive lossy compression, all seven wavelet filters, and the paper's 17-bin interleaved entropy coder. The saved `.icerpy` files use this project's own versioned header, not NASA's flight bitstream format. Compression currently uses a single segment and maintains probability counts per subband; independent error-containment segments from Section V of the paper are not implemented.
 
 ## Quick Links
 _Note: Equations are in LateX which does not display properly in the official GitHub mobile app_
 
 - [How does Wavelet Transformation Work?](https://github.com/dsmith111/ICER-Python/blob/master/ICERPython/Wavelets/README.md)
 - [How does Bit-plane Coding Work?](https://github.com/dsmith111/ICER-Python/blob/master/ICERPython/BitPlaneCoding/README.md)
+- [How does Entropy Coding Work?](./ICERPython/EntropyCoding/README.md)
 
 ## Installation
 Clone the repository:
 
 ```bash
-Copy code
 git clone https://github.com/dsmith111/ICER-Python.git
 cd ICER-Python
 ```
 
 Install the required dependencies:
 ```bash
-Copy code
 pip install -r requirements.txt
 ```
 ## Usage
-The main script for compressing images is compress_image.py. 
+The main script for compressing and reconstructing images is `compress_image.py`.
 
 ### Command Line Arguments
 
 `compress_image.py` accepts the following command line arguments:
 
 - `-i`, `--input_image`: Path to the input image file that you want to compress.
-- `-o`, `--output_image`: Prefix for the output image files. The decomposed images will be saved with this prefix and an appropriate suffix, e.g., `_low_pass0.png` and `_high_pass0.png`.
-- `-b`, `--bitrate`: (Optional) Bitrate for lossy compression. Default value is `0.5`.
+- `-o`, `--output_image`: Prefix for the compressed file and decomposed image files. When decompressing, this is the reconstructed image path.
+- `-l`, `--levels`: (Optional) Number of wavelet decomposition levels. Default value is `1`.
+- `-b`, `--bitrate`: (Optional) Target bits per input pixel when using `--lossy`. Default value is `0.5`.
 - `-f`, `--filter`: (Optional) Wavelet filter to use for compression. Default value is `"A"`.
-- `--filter_parameters`: (Optional) Path to the filter parameters JSON file. Default value is `"./filter_parameters.json"`.
+- `--filter_parameters`: (Optional) Path to the filter parameters JSON file. Defaults to the `filter_parameters.json` beside the script.
+- `--lossless`: (Optional) Select lossless compression explicitly. Lossless compression is the default when no lossy controls are supplied.
+- `--lossy`: (Optional) Enable the bitrate target.
+- `--minimum_loss`: (Optional) Quality goal expressed as a minimum number of omitted level-1 HH bit planes. Other subbands are weighted according to their importance. Default value is `0`.
+- `--byte_quota`: (Optional) Approximate entropy payload byte quota. When a bitrate is also supplied, the smaller quota is used.
+- `--decompress`: (Optional) Reconstruct an image from a `.icerpy` file. The file stores the filter parameters needed for reconstruction.
+- `--allow_partial`: (Optional) Permit decompression of a truncated entropy payload. The file header must remain intact.
+- `--no_previews`: (Optional) Skip saving the decomposed wavelet images.
 
 #### Example Usage
 
@@ -77,11 +86,35 @@ To compress an image using the ICER algorithm with the default parameters, run t
 ```bash
 python3 compress_image.py -i path/to/input/image.jpg -o path/to/output/image_prefix -f A
 ```
-This command will perform the wavelet transform on the input image, save the decomposed images as PNG files, and store them in the specified output path with the given prefix.
+This command will perform lossless compression, save `path/to/output/image_prefix.icerpy`, and save decomposed PNG images beneath `path/to/output/A/`.
 
-The decomposed images will have filenames like `image_prefix_low_pass0.png` and `image_prefix_high_pass0.png`.
+The decomposed images will have filenames like `image_prefix_level1_LL.png` and `image_prefix_level1_HH.png`. These are 8-bit visualizations; the compressed file retains the signed integer coefficients.
 
-_Note_: The current implementation only supports grayscale images.
+To reconstruct the image:
+
+```bash
+python3 compress_image.py --decompress -i path/to/output/image_prefix.icerpy -o path/to/output/reconstructed.png
+```
+
+To compress progressively with a bitrate target and three decomposition levels:
+
+```bash
+python3 compress_image.py --lossy -b 0.5 -l 3 -i path/to/input/image.jpg -o path/to/output/lossy_prefix
+```
+
+To set a quality goal without a bitrate target:
+
+```bash
+python3 compress_image.py --minimum_loss 2 -l 3 -i path/to/input/image.jpg -o path/to/output/quality_prefix
+```
+
+As in Section VI of the paper, the quota is checked between subband bit planes, before flushing the entropy coder. The final payload can exceed the quota, and the file header is additional overhead. A target bitrate is therefore not a strict final-file size limit. Missing lower bit planes are reconstructed using the paper's deadzone quantizer; the LL mean is stored separately so a reconstruction is still available when no planes fit.
+
+_Note_: The command line converts input images to 8-bit grayscale. Lossless reconstruction refers to these grayscale samples, not to the original color data or the original image file's bytes.
+
+### Python Usage
+
+`ICER.lossless_compression(levels)` and `ICER.lossy_compression(bitrate, levels, minimum_loss, byte_quota)` return the decomposed subbands, preserving the original interface. The compressed file bytes are available as `icer.encoded_bit_stream`. Pass these bytes to `icer.decompression(...)` to obtain the reconstructed integer image array. `allow_partial=True` enables reconstruction from an intact header followed by a shortened payload.
 
 ## Project Structure
 The project is organized into the following directories:
@@ -99,6 +132,9 @@ The project is organized into the following directories:
       - `ContextModel.py`: Contains the context modeling methods for bit-plane coding.
         - Also contains the values needed for the zero probability estimation used in the entropy coding process.
    - `ICER.py`: Main ICER implementation, integrating all the components (Wavelets, BitPlaneCoding, etc.).
+  - `EntropyCoding`: Contains the interleaved entropy encoder and decoder, along with its explanation.
+
+- `tests`: Contains the regression tests for the individual stages and the complete compression workflow.
 
 
 The main script for compressing images is `compress_image.py`.
@@ -135,7 +171,22 @@ Decomposed Images  |  Labels
 
 _These images were taken directly from the research paper, hence the lower resolution_
 
-Comparing the Python ICER results against the original NASA ICER results, we can see the decomposition has been accurately implemented.
+These checked-in Python plots were generated by the earlier implementation and illustrate the decomposition process. The current integer rounding and boundary handling are validated by the regression tests; these historical visual comparisons are not a numerical correctness test.
+
+### Compression and Reconstruction
+
+The checked-in `original_images/rover.jpg`, converted to 810 x 1440 grayscale samples, was tested with filter A and three decomposition levels:
+
+| Mode | Compressed File Size | Reconstruction |
+| ---- | ---- | ---- |
+| Lossless | 557,525 bytes | Exact grayscale sample match |
+| Lossy, 0.5 bits/pixel target, minimum loss 2 | 85,281 bytes | Mean squared error 25.37 |
+
+These sizes include the ICER-Python header. The lossy quota is approximate, as described above. Results depend on image content, filter selection, and decomposition levels.
+
+**Reconstructed Image**
+
+![Reconstructed rover image](./assets/reconstructed.png)
 
 ## Contributing
 Contributions are welcome! If you find any issues or have suggestions for improvements, please open an issue or submit a pull request.

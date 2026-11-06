@@ -35,15 +35,15 @@ The `Filters` sub-directory contains the implementations of the low-pass and hig
 
 The low-pass filter is responsible for smoothing the input data and preserving the low-frequency components. It takes an input data array and computes the output values as follows:
 
-- For even-length data, it computes the first (N / 2) - 1 outputs using the average of the current data point and the next data point.
+- For even-length data, it computes N / 2 outputs using the rounded-down average of each adjacent pair.
    
-- For odd-length data, it computes the output values as for even-length data and sets the last output value as the last data point.
+- For odd-length data, it computes the averages of the complete pairs and sets the last output value as the last data point. There are ceil(N / 2) low-pass outputs.
 
 This follows the equation:
 
 $$ l[n] = 
 \begin{cases}
-[\frac{1}{2}*(x[2n]+x[2n+1])] & n=0,1,...,[\frac{N}{2}] \\
+\lfloor\frac{1}{2}*(x[2n]+x[2n+1])\rfloor & n=0,1,...,\lfloor\frac{N}{2}\rfloor-1 \\
 x[N-1] & n=[\frac{N-1}{2}],N \space odd \\
 \end{cases} $$
 
@@ -55,13 +55,13 @@ The high-pass filter is responsible for detecting the high-frequency components 
 
 $$ d[n] = 
 \begin{cases}
-[x[2n]-x[2n+1]) & n=0,1,...,[\frac{N}{2}] \\
+x[2n]-x[2n+1] & n=0,1,...,\lfloor\frac{N}{2}\rfloor-1 \\
 0 & n=[\frac{N-1}{2}],N \space odd \\
 \end{cases} $$
 
 - r(n) values, which represent the difference between adjacent low-pass filter outputs.
 
-$$ r[n] = l[n-1] -l[n], n=1,2,...,[\frac{N}{2}] - 1$$
+$$ r[n] = l[n-1] -l[n], n=1,2,...,\lceil\frac{N}{2}\rceil - 1$$
 
 - High-pass filter outputs, which are computed based on the filter parameters and the computed d(n) and r(n) values.
 
@@ -76,4 +76,20 @@ $$ h[n] = d[n] -
 [\frac{1}{4}r[\frac{N}{2} - 1]] & N \text{ even}, n=\frac{N}{2}-1 \\
 [\alpha_{-1} r[n-1] + \alpha_0 r[n] + \alpha_1 r[n+1] - \beta d[n+1] + \frac{1}{2}] & \text{otherwise}
 \end{cases} $$
+
+The square brackets in the high-pass expression denote rounding down to an integer. There are floor(N / 2) high-pass outputs, so together the low-pass and high-pass arrays contain exactly N samples. Calculations use signed integers to avoid unsigned subtraction or addition overflow.
+
+## How is the Transform Reversed?
+
+The inverse follows page 6 of the paper. Given the low-pass and high-pass arrays, first recompute `r[n]` from the low-pass array. Recover `d[n]` by adding back the rounded high-pass prediction. This must happen from the largest index down to zero because the prediction can depend on `d[n+1]`.
+
+The original pair is then recovered using:
+
+$$ x[2n] = l[n] + \left\lfloor\frac{d[n]+1}{2}\right\rfloor $$
+
+$$ x[2n+1] = x[2n] - d[n] $$
+
+For an odd-length input, the final sample is the final low-pass value. For short inputs without the neighbors required by the general equation, the implementation uses the available endpoint prediction; a single pair has a zero prediction. These short-input boundary choices are shared by the forward and inverse transforms.
+
+The two-dimensional inverse combines columns first and then rows, undoing the forward operations in reverse order. With multiple decomposition levels, it starts at the deepest LL band and works outward through the detail bands. The regression tests verify both individual filter equations and exact reconstruction for all seven filters, including odd dimensions.
 

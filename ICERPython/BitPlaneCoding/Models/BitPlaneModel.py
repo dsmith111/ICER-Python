@@ -1,5 +1,5 @@
 import numpy as np
-from ICERPython.BitPlaneCoding.Models import ContextModel
+from ICERPython.BitPlaneCoding.Models.ContextModel import ContextModel
 
 class BitPlaneModel:
     levelOfDecomp = 0
@@ -16,11 +16,12 @@ class BitPlaneModel:
         "LL": 2
     }
 
-    def __init__(self, level: int, bitNum: int, subband: str, bitPlane: np.array, context: ContextModel):
+    def __init__(self, level: int, bitNum: int, subband: str, bitPlane: np.array, context: ContextModel, categoryMatrix=None, signMatrix=None):
         self.levelOfDecomp = level
         self.bitNum = bitNum
         self.bitPlaneMatrix = bitPlane  
-        self.categoryMatrix = np.zeros((bitPlane.shape[0], bitPlane.shape[1]), dtype=int)
+        self.categoryMatrix = np.zeros(bitPlane.shape, dtype=int) if categoryMatrix is None else categoryMatrix
+        self.signMatrix = np.zeros(bitPlane.shape, dtype=int) if signMatrix is None else signMatrix
         self.context = context
         self.subband = subband
         self._calculate_priority()
@@ -36,5 +37,5 @@ class BitPlaneModel:
         self.categoryMatrix[coord] = category
     
     def _calculate_priority(self):
-        # Priority is calculated by levelOfDecop and subband. It is levelofdecomp * subband_multiplier
-        self.priority = self.levelOfDecomp * self._subband_multipliers[self.subband]
+        # Combine bit significance and the subband weight as an integer priority offset.
+        self.priority = self.bitNum + self.levelOfDecomp + int(np.log2(self._subband_multipliers[self.subband]))
